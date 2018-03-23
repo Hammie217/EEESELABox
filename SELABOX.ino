@@ -5,9 +5,11 @@
  * Pins:
  * A1 - middle of potential divider  
  * D5 - LED Strip data
- * 7 Segment - (IO - 5v) (+ - 5V) (D - A4) (C - A5) 
+ * 7 Segment - (IO - 5v) (+ - 5V) (- - GND) (D - A4) (C - A5) 
+ * A2 - Puzzle 2 LED anode 
+ * A3 - Puzzle 3 LED anode 
  */
-
+//if you're reading this then remind me to put a pull down resistor on leds for puzzles 1 and 2 to stop floating and to improve accuracy
 #include "FastLED.h"
 #include <math.h>
 #include <Wire.h> // Enable this line if using Arduino Uno, Mega, etc.
@@ -53,18 +55,9 @@ void loop() {
     FastLED.show();
     //
     //display 7 seg
-    if((int)countdown<=0){
-     matrix.writeDigitNum(0, 0xF,false);
-     matrix.writeDigitNum(1, 0xA,false);
-     matrix.writeDigitRaw(3,6);
-     matrix.writeDigitRaw(4,56);
-    }
-    else{
-    matrix.print((int)countdown, DEC);
-    countdown-=countdownSpeed;
-    }
-  matrix.writeDisplay();
-    
+    countdownFunc();
+    //check puzzles 2 and 3 are solved
+    checkPuzzles();
 }
 
 void LEDStrip(){
@@ -105,7 +98,32 @@ void LEDStrip(){
 }
 
 void countdownFunc(){
-
+if((int)countdown<=0){
+     matrix.writeDigitNum(0, 0xF,false);
+     matrix.writeDigitNum(1, 0xA,false);
+     matrix.writeDigitRaw(3,6);
+     matrix.writeDigitRaw(4,56);
+    }
+    else{
+    matrix.print((int)countdown, DEC);
+    countdown-=countdownSpeed;
+    }
+  matrix.writeDisplay();
   
+}
+
+void checkPuzzles(){
+  if((analogRead(2)>200)&&(analogRead(3)>200){
+    Serial.println("puzzles 2 and 3 solved");
+  }
+  else if(analogRead(3)>200){
+    Serial.println("Puzzle 3 solved")
+    }
+     else if(analogRead(2)>200){
+    Serial.println("Puzzle 2 solved")
+    }
+     else {
+    Serial.println("Neither 2 or 3 solved")
+    }
 }
 
